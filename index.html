@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare &amp; Contrast Essay Lab</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --cream:#F3ECE1; --paper:#FFFDF9; --ink:#3B2525; --muted:#6F625A; --line:#D9CDB9;
+    --plum:#8E5A83; --plum-bg:#F1E4EE; --teal:#2F7F70; --teal-bg:#E0F0EB; --slate:#4F6F93; --slate-bg:#E3EBF4;
+    --gold:#B8860B; --ok:#2E7D46; --warn:#B54708;
+  }
+  *{ box-sizing:border-box; -webkit-user-drag:none; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; font-family:"Segoe UI",Helvetica,Arial,sans-serif; background:var(--cream); color:var(--ink);
+    -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; line-height:1.5;
+  }
+  input,textarea,select{ -webkit-user-select:text; user-select:text; font-family:inherit; color:inherit; }
+  .wrap{ max-width:860px; margin:0 auto; padding:20px 16px 90px; }
+  header{ background:var(--ink); color:#fff; padding:26px 24px; border-radius:16px; margin-bottom:18px; }
+  header h1{ font-family:Georgia,"Times New Roman",serif; font-size:28px; margin:0 0 8px; line-height:1.2; }
+  header p{ margin:0; color:#E9DCCB; font-size:15px; }
+  .pill{ display:inline-block; font-size:12px; font-weight:700; letter-spacing:.04em; padding:3px 10px; border-radius:99px; margin-right:6px; }
+  .pill.a{ background:var(--plum-bg); color:var(--plum); } .pill.b{ background:var(--teal-bg); color:var(--teal); } .pill.c{ background:var(--slate-bg); color:var(--slate); }
+  section,.card{ background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:20px 20px 18px; margin-bottom:18px; }
+  h2{ font-family:Georgia,serif; font-size:21px; margin:0 0 6px; }
+  .sub{ color:var(--muted); font-size:14.5px; margin:0 0 14px; }
+  label{ display:block; font-size:12.5px; font-weight:700; color:var(--muted); margin-bottom:4px; }
+  input[type=text],select,textarea{ width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:9px; font-size:15.5px; background:#fff; }
+  textarea{ resize:vertical; line-height:1.55; }
+  textarea:focus,input:focus,select:focus{ outline:3px solid #E7C98A; outline-offset:1px; }
+  .row{ display:flex; gap:12px; flex-wrap:wrap; } .row>div{ flex:1; min-width:200px; }
+  .pace{ width:100%; border-collapse:collapse; font-size:14px; }
+  .pace td{ padding:7px 8px; border-bottom:1px solid var(--line); } .pace td:first-child{ font-weight:700; white-space:nowrap; width:130px; }
+  .pace tr:last-child td{ border-bottom:none; }
+  .venn{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  @media(max-width:700px){ .venn{ grid-template-columns:1fr; } }
+  .venn textarea{ min-height:120px; font-size:14.5px; }
+  .vlabel{ font-weight:700; font-size:13px; padding:5px 10px; border-radius:8px; margin-bottom:6px; display:inline-block; }
+  .p-head{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+  .num{ width:34px; height:34px; border-radius:50%; display:grid; place-items:center; color:#fff; font-weight:700; font-family:Georgia,serif; }
+  details{ background:#FBF7F0; border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin:8px 0 12px; }
+  summary{ cursor:pointer; font-weight:700; font-size:14px; }
+  ol.map{ margin:8px 0 2px 18px; padding:0; font-size:14.5px; } ol.map li{ margin:3px 0; } ol.map i{ color:var(--muted); }
+  .bank{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 0; }
+  .bank span{ background:#fff; border:1px solid var(--line); border-radius:99px; padding:3px 11px; font-size:13.5px; }
+  .meters{ display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; font-size:13.5px; font-weight:700; }
+  .meter{ padding:5px 11px; border-radius:99px; background:#EFE7DA; color:var(--muted); }
+  .meter.met{ background:#DDF1E3; color:var(--ok); } .meter.low{ background:#FDEBD8; color:var(--warn); }
+  .hint{ font-size:13px; color:var(--muted); margin-top:6px; }
+  .check label{ display:flex; gap:10px; align-items:flex-start; font-size:15px; font-weight:400; color:var(--ink); margin:7px 0; cursor:pointer; }
+  .check input{ width:20px; height:20px; margin-top:2px; flex:none; accent-color:var(--teal); }
+  .btn{ border:none; border-radius:10px; padding:14px 28px; font-size:16px; font-weight:700; cursor:pointer; background:var(--ink); color:#fff; }
+  .btn:hover{ background:#5A3838; } .btn:focus-visible{ outline:3px solid #E7C98A; outline-offset:2px; }
+  .actions{ text-align:center; margin-top:6px; }
+  .note{ font-size:13px; color:var(--muted); text-align:center; margin-top:10px; }
+  #wm{ position:fixed; inset:0; pointer-events:none; z-index:50; background-repeat:repeat; }
+  .saved{ position:fixed; right:14px; bottom:12px; background:var(--ink); color:#fff; font-size:12.5px; padding:6px 12px; border-radius:99px; z-index:60; opacity:.9; }
+  .sample{ font-size:13.5px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px; }
+  @media(max-width:700px){ .sample{ grid-template-columns:1fr; } }
+  .sample div{ border-radius:10px; padding:8px 10px; } .sample b{ display:block; margin-bottom:2px; }
+  @media print{ #wm,.saved,.actions{ display:none; } body{ background:#fff; } }
+</style>
+</head>
+<body>
+<div id="wm" aria-hidden="true"></div>
+<div class="saved" id="saved" aria-live="polite">Autosave on</div>
+<div class="wrap">
+
+  <header>
+    <h1>Compare &amp; Contrast Essay Lab</h1>
+    <p>Turn your Venn diagram into a 3-paragraph essay: <strong>at least 10 sentences in each paragraph</strong>. Write in your own words. Copy and paste are switched off on purpose, so type it yourself.</p>
+  </header>
+
+  <div class="card">
+    <div class="row">
+      <div><label for="sName">Name</label><input type="text" id="sName" autocomplete="off"></div>
+      <div><label for="sDate">Date</label><input type="text" id="sDate" value="21 October 2026" autocomplete="off"></div>
+    </div>
+  </div>
+
+  <section>
+    <h2>Step 1 · Plan from your Venn diagram</h2>
+    <p class="sub">Type the main points from your homework Venn. If your topic is different from the sample, change the two subject names.</p>
+    <div class="row">
+      <div><label for="subjA">Subject A (left circle)</label><input type="text" id="subjA" value="Corporate job"></div>
+      <div><label for="subjB">Subject B (right circle)</label><input type="text" id="subjB" value="Startup job"></div>
+    </div>
+    <div class="venn" style="margin-top:14px">
+      <div><span class="vlabel pill a">Only <span class="nameA">Corporate job</span></span><textarea id="v1" placeholder="Differences that belong only to A"></textarea></div>
+      <div><span class="vlabel pill c">Both (similarities)</span><textarea id="v3" placeholder="What A and B have in common"></textarea></div>
+      <div><span class="vlabel pill b">Only <span class="nameB">Startup job</span></span><textarea id="v2" placeholder="Differences that belong only to B"></textarea></div>
+    </div>
+    <details>
+      <summary>Need an example? See a sample Venn (Startup vs Corporate)</summary>
+      <div class="sample">
+        <div style="background:var(--plum-bg)"><b>Corporate only</b>job security, clear hierarchy, slower decisions, structured training</div>
+        <div style="background:var(--slate-bg)"><b>Both</b>hard work needed, team collaboration, room to grow, clear deadlines</div>
+        <div style="background:var(--teal-bg)"><b>Startup only</b>fast-paced, flexible, higher risk of failure, multiple roles, informal culture</div>
+      </div>
+    </details>
+    <label for="thesis" style="margin-top:12px">My preference and main reason (one sentence, you will use it in Paragraphs 1 and 3)</label>
+    <input type="text" id="thesis" placeholder="Example: I would rather work in a ____ job because ____.">
+  </section>
+
+  <!-- PARAGRAPH 1 -->
+  <section id="sec1">
+    <div class="p-head"><span class="num" style="background:var(--plum)">1</span><h2 style="margin:0">Paragraph 1 · Introduce and describe <span class="nameA">Corporate job</span></h2></div>
+    <p class="sub">Start with a hook and your thesis, then describe the main features of Subject A. End by moving toward Subject B.</p>
+    <details open>
+      <summary>Sentence map (10 sentences)</summary>
+      <ol class="map">
+        <li>Hook: why does choosing a workplace matter?</li>
+        <li>Introduce the two jobs you will compare.</li>
+        <li>Thesis: your preference and main reason.</li>
+        <li>Topic sentence: what makes Subject A distinctive?</li>
+        <li>Feature 1 <i>(for example, security)</i></li>
+        <li>An example or result of feature 1.</li>
+        <li>Feature 2 <i>(for example, hierarchy or slow decisions)</i></li>
+        <li>An example or result of feature 2.</li>
+        <li>Feature 3, with a relative clause <i>(a company that… / an employee who…)</i></li>
+        <li>Bridge sentence: turn to Subject B.</li>
+      </ol>
+      <div class="bank"><span>Although…</span><span>While…</span><span>Unlike…</span><span>a company that…</span><span>an employee who…</span><span>For example,</span><span>As a result,</span></div>
+    </details>
+    <textarea id="p1" rows="12" placeholder="Write Paragraph 1 here. Aim for at least 10 sentences."></textarea>
+    <div class="meters" id="m1"></div>
+  </section>
+
+  <!-- PARAGRAPH 2 -->
+  <section id="sec2">
+    <div class="p-head"><span class="num" style="background:var(--teal)">2</span><h2 style="margin:0">Paragraph 2 · Describe <span class="nameB">Startup job</span> and contrast it</h2></div>
+    <p class="sub">Show how Subject B is different. Use contrast words so the reader can see the comparison.</p>
+    <details>
+      <summary>Sentence map (10 sentences)</summary>
+      <ol class="map">
+        <li>Transition and topic sentence for Subject B.</li>
+        <li>Feature 1, contrasted with A <i>(for example, pace)</i></li>
+        <li>An example of feature 1.</li>
+        <li>Feature 2 <i>(for example, flexibility or multiple roles)</i></li>
+        <li>An example or result of feature 2.</li>
+        <li>A direct contrast with A using <i>whereas</i> or <i>while</i>.</li>
+        <li>Feature 3 <i>(for example, risk)</i></li>
+        <li>The consequence of that risk.</li>
+        <li>Feature 4, with a relative clause <i>(a culture that… / a team whose…)</i></li>
+        <li>Who would suit this job best?</li>
+      </ol>
+      <div class="bank"><span>In contrast,</span><span>On the other hand,</span><span>Whereas…</span><span>However,</span><span>Compared with…</span><span>…more … than…</span><span>Unlike…</span></div>
+    </details>
+    <textarea id="p2" rows="12" placeholder="Write Paragraph 2 here. Aim for at least 10 sentences."></textarea>
+    <div class="meters" id="m2"></div>
+  </section>
+
+  <!-- PARAGRAPH 3 -->
+  <section id="sec3">
+    <div class="p-head"><span class="num" style="background:var(--slate)">3</span><h2 style="margin:0">Paragraph 3 · Similarities and conclusion</h2></div>
+    <p class="sub">Show what both jobs share, then finish with your preference in new words.</p>
+    <details>
+      <summary>Sentence map (10 sentences)</summary>
+      <ol class="map">
+        <li>Transition: “Despite these differences…”</li>
+        <li>Similarity 1 <i>(for example, hard work)</i></li>
+        <li>An example from each job.</li>
+        <li>Similarity 2 <i>(for example, teamwork)</i></li>
+        <li>An example.</li>
+        <li>Similarity 3 <i>(for example, room to grow)</i></li>
+        <li>An example.</li>
+        <li>Similarity 4 <i>(for example, deadlines)</i></li>
+        <li>Restate your thesis in different words.</li>
+        <li>Persuasive closing: advice, a prediction, or a question for the reader.</li>
+      </ol>
+      <div class="bank"><span>Similarly,</span><span>Likewise,</span><span>Both… and…</span><span>Just as… so…</span><span>Neither… nor…</span><span>In the end,</span><span>Overall,</span></div>
+    </details>
+    <textarea id="p3" rows="12" placeholder="Write Paragraph 3 here. Aim for at least 10 sentences."></textarea>
+    <div class="meters" id="m3"></div>
+  </section>
+
+  <section class="check">
+    <h2>Final check</h2>
+    <p class="sub">Tick each box only when it is true.</p>
+    <label><input type="checkbox" data-c="1"> Each paragraph has 10 or more sentences.</label>
+    <label><input type="checkbox" data-c="2"> I used at least 3 comparing or contrasting signal words in each paragraph.</label>
+    <label><input type="checkbox" data-c="3"> I used at least 2 relative clauses (who, which, that, whose, where) in each paragraph.</label>
+    <label><input type="checkbox" data-c="4"> I mixed short and long sentences and did not start every sentence the same way.</label>
+    <label><input type="checkbox" data-c="5"> My thesis in Paragraph 1 and my conclusion in Paragraph 3 match.</label>
+    <label><input type="checkbox" data-c="6"> I checked capital letters, full stops, spelling and subject–verb agreement.</label>
+  </section>
+
+  <div class="actions"><button class="btn" id="dl">Download my essay as PDF</button></div>
+  <p class="note">Enter your name first so it appears on your PDF. One PDF per student. Submit it as your teacher tells you.</p>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const FIELDS = ['sName','sDate','subjA','subjB','v1','v2','v3','thesis','p1','p2','p3'];
+  const MIN_S = 10;
+
+  /* ---------- counting ---------- */
+  function words(t){ const x=t.trim(); return x? x.split(/\s+/).length : 0; }
+  function sentenceCount(t){
+    const s = t.trim(); if(!s) return 0;
+    const c = s.replace(/\b(e\.g|i\.e|vs|Mr|Mrs|Ms|Dr|etc)\./gi, m => m.replace('.',''));
+    return c.split(/[.!?]+["')\]]*(?:\s+|$)/).filter(p => p.trim().split(/\s+/).filter(Boolean).length >= 3).length;
+  }
+  const SIGNALS = [
+    'however','in contrast','on the other hand','whereas','while','unlike','although','though','but','yet','compared with','compared to','by comparison','nevertheless','instead','despite',
+    'similarly','likewise','both','also','just as','like','as well as','in the same way','neither','too','in addition','overall','in the end'
+  ];
+  function signals(t){
+    const low = ' ' + t.toLowerCase().replace(/[^a-z\s']/g,' ') + ' ';
+    return SIGNALS.filter(w => low.includes(' ' + w + ' ')).length;
+  }
+  function relWords(t){ const m = t.match(/\b(who|whom|whose|which|where|that)\b/gi); return m ? m.length : 0; }
+
+  function meter(text, cls){ const s=document.createElement('span'); s.className='meter ' + cls; s.textContent=text; return s; }
+  function update(i){
+    const t = $('p'+i).value, box = $('m'+i); box.innerHTML = '';
+    const n = sentenceCount(t), w = words(t), sg = signals(t), rc = relWords(t);
+    box.appendChild(meter('Sentences: ' + n + ' / ' + MIN_S, n >= MIN_S ? 'met' : (n ? 'low' : '')));
+    box.appendChild(meter('Words: ' + w, ''));
+    box.appendChild(meter('Signal words: ' + sg + ' (aim for 3+)', sg >= 3 ? 'met' : ''));
+    box.appendChild(meter('Relative-clause words: ' + rc + ' (aim for 2+)', rc >= 2 ? 'met' : ''));
+  }
+  function names(){
+    const a = $('subjA').value.trim() || 'Subject A', b = $('subjB').value.trim() || 'Subject B';
+    document.querySelectorAll('.nameA').forEach(e => e.textContent = a);
+    document.querySelectorAll('.nameB').forEach(e => e.textContent = b);
+  }
+
+  /* ---------- watermark ---------- */
+  function watermark(){
+    const name = $('sName').value.trim() || 'Student';
+    const stamp = new Date().toLocaleString();
+    const c = document.createElement('canvas'); c.width = 400; c.height = 240;
+    const x = c.getContext('2d'); x.translate(200,120); x.rotate(-Math.PI/7); x.textAlign='center';
+    x.fillStyle = 'rgba(59,37,37,0.10)'; x.font = 'bold 16px Helvetica,Arial,sans-serif'; x.fillText(name, 0, -6);
+    x.font = '12px Helvetica,Arial,sans-serif'; x.fillText(stamp, 0, 14);
+    $('wm').style.backgroundImage = 'url(' + c.toDataURL() + ')';
+  }
+
+  /* ---------- autosave (never required for the page to work) ---------- */
+  let timer = null;
+  function save(){
+    try{
+      const d = {}; FIELDS.forEach(f => d[f] = $(f).value);
+      d.checks = Array.from(document.querySelectorAll('[data-c]')).map(c => c.checked);
+      localStorage.setItem('ccEssayLab_v1', JSON.stringify(d));
+      const n = new Date(); $('saved').textContent = 'Saved ' + n.getHours() + ':' + String(n.getMinutes()).padStart(2,'0');
+    }catch(e){ $('saved').textContent = 'Autosave unavailable'; }
+  }
+  function load(){
+    try{
+      const d = JSON.parse(localStorage.getItem('ccEssayLab_v1') || 'null'); if(!d) return;
+      FIELDS.forEach(f => { if(typeof d[f] === 'string') $(f).value = d[f]; });
+      if(Array.isArray(d.checks)) document.querySelectorAll('[data-c]').forEach((c,i) => c.checked = !!d.checks[i]);
+    }catch(e){}
+  }
+  function queue(){ clearTimeout(timer); timer = setTimeout(save, 600); }
+
+  FIELDS.forEach(f => $(f).addEventListener('input', () => { queue(); if(/^p[123]$/.test(f)) update(f.slice(1)); if(f==='subjA'||f==='subjB') names(); if(f==='sName') watermark(); }));
+  document.querySelectorAll('[data-c]').forEach(c => c.addEventListener('change', queue));
+
+  /* ---------- copy / paste / drag protection (honest limit: this cannot stop typing from another device) ---------- */
+  ['copy','cut','paste','drop','contextmenu','dragstart'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), true));
+  document.addEventListener('keydown', e => {
+    if((e.ctrlKey || e.metaKey) && ['c','x','v','p','s'].includes(e.key.toLowerCase())) e.preventDefault();
+  });
+
+  /* ---------- PDF ---------- */
+  function clean(t){
+    return String(t||'').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,'-').replace(/…/g,'...').replace(/[^\x09\x0A\x0D\x20-\x7E -ÿ]/g,'');
+  }
+  $('dl').addEventListener('click', () => {
+    const name = $('sName').value.trim();
+    if(!name){ alert('Please enter your name first.'); $('sName').focus(); return; }
+    if(!window.jspdf){ alert('The PDF tool did not load. Check your connection, or use your browser Print > Save as PDF.'); window.print(); return; }
+    const { jsPDF } = window.jspdf; const doc = new jsPDF({ unit:'pt', format:'a4' });
+    const mx = 54, W = 595 - mx*2, bottom = 790; let y = 56;
+    const stamp = new Date().toLocaleString();
+    const ensure = h => { if(y + h > bottom){ doc.addPage(); y = 56; } };
+    const heading = (t,size=15,rgb=[59,37,37]) => { ensure(size+14); doc.setFont('helvetica','bold'); doc.setFontSize(size); doc.setTextColor(...rgb); doc.text(clean(t), mx, y); y += size + 8; };
+    const small = (t) => { doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(111,98,90); const L = doc.splitTextToSize(clean(t), W); ensure(L.length*13); doc.text(L, mx, y); y += L.length*13 + 4; };
+    const para = (t) => {
+      doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(43,30,30);
+      const L = doc.splitTextToSize(clean(t) || '(not written)', W);
+      L.forEach(line => { ensure(17); doc.text(line, mx, y); y += 16.5; }); y += 10;
+    };
+    const A = $('subjA').value.trim() || 'Subject A', B = $('subjB').value.trim() || 'Subject B';
+
+    heading('Compare & Contrast Essay', 20);
+    small(name + '   |   ' + $('sDate').value.trim() + '   |   Generated ' + stamp);
+    small('Topic: ' + A + ' vs. ' + B);
+    y += 4;
+    heading('Venn diagram points', 13, [47,127,112]);
+    small('Only ' + A + ': ' + ($('v1').value.trim() || '-'));
+    small('Both: ' + ($('v3').value.trim() || '-'));
+    small('Only ' + B + ': ' + ($('v2').value.trim() || '-'));
+    small('My preference: ' + ($('thesis').value.trim() || '-'));
+    y += 6;
+    const titles = ['Paragraph 1 - Introduction and ' + A, 'Paragraph 2 - ' + B + ' and contrast', 'Paragraph 3 - Similarities and conclusion'];
+    [1,2,3].forEach(i => {
+      const t = $('p'+i).value.trim();
+      heading(titles[i-1], 13, [142,90,131]);
+      small('Sentences: ' + sentenceCount(t) + '   Words: ' + words(t) + '   Signal words: ' + signals(t) + '   Relative-clause words: ' + relWords(t));
+      para(t);
+    });
+    heading('Final check', 13, [79,111,147]);
+    const cl = ['10+ sentences per paragraph','3+ signal words per paragraph','2+ relative clauses per paragraph','Sentence variety','Thesis and conclusion match','Proofread'];
+    document.querySelectorAll('[data-c]').forEach((c,i) => small((c.checked ? '[x] ' : '[ ] ') + cl[i]));
+
+    const pages = doc.internal.getNumberOfPages();
+    for(let p=1;p<=pages;p++){
+      doc.setPage(p);
+      try{ doc.setGState(new doc.GState({opacity:0.09})); }catch(e){}
+      doc.setFont('helvetica','bold'); doc.setFontSize(26); doc.setTextColor(59,37,37);
+      doc.text(clean(name), 300, 440, { align:'center', angle:35 });
+      doc.setFontSize(12); doc.text(clean(stamp), 300, 462, { align:'center', angle:35 });
+      try{ doc.setGState(new doc.GState({opacity:1})); }catch(e){}
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(111,98,90);
+      doc.text(clean(name) + '  -  page ' + p + ' of ' + pages, mx, 820);
+    }
+    doc.save(name.replace(/[^a-z0-9]+/gi,'_') + '_CompareContrast_Essay.pdf');
+  });
+
+  load(); names(); [1,2,3].forEach(update); watermark(); setInterval(watermark, 60000);
+})();
+</script>
+</body>
+</html>
